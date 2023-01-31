@@ -14,23 +14,10 @@ public class MainPage extends AbsPage{
         super(driver, "/");
     }
 
-    public ModalWindow modalWindow = new ModalWindow(driver);
-    public InputForm inputForm = new InputForm(driver);
-    public HeaderDropDown headerDropDown = new HeaderDropDown(driver);
-    public Waiter waiter = new Waiter(driver);
-
     @FindBy(css = ".header3__button-sign-in-container")
     private WebElement mainPageLoginButton;
-    public WebElement getMainPageLoginButton() {
-        return mainPageLoginButton;
-    }
 
-    public void getProfilePage(String login, String password) {
-        getMainPageLoginButton().click();
-        waiter.waitForCondition(ExpectedConditions.visibilityOf(modalWindow.getLoginWindow()));
-        waiter.waitForCondition(ExpectedConditions.visibilityOf(inputForm.getLoginForm()));
-        modalWindow.login(login, password);
-        waiter.waitForCondition(ExpectedConditions.visibilityOf(headerDropDown.getOpenDropDownMenu()));
-        headerDropDown.moveToUserProfile();
+    public void clickMainLoginPageButton() {
+        clickElement(mainPageLoginButton);
     }
 }
