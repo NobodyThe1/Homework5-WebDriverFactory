@@ -53,6 +53,7 @@ public class OtusProfileTest {
         inputForm.setEnglishLevel("Средний (Intermediate)");
 
         inputForm.fillContactForm1(MessengersData.TELEGRAM.getName(), PhoneData.PHONE1.getName());
+        inputForm.fillContactForm2(MessengersData.WHATSAPP.getName(), PhoneData.PHONE2.getName());
 
         profilePage.submitSaveProfilePage();
         driver.manage().deleteAllCookies();
