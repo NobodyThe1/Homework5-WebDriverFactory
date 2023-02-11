@@ -2,6 +2,6 @@ package components;
 
 public interface IModalWindow {
 
-    void popUpNotVisible();
-    void popUpVisible();
+    void popUpShouldNotBeVisible();
+    void popUpShouldVisible();
 }

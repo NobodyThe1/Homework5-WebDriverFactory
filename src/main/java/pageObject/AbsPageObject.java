@@ -1,6 +1,7 @@
 package pageObject;
 
 import org.junit.jupiter.api.Assertions;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -66,5 +67,15 @@ public abstract class AbsPageObject {
 
     protected void assertByText(String text, WebElement element) {
         Assertions.assertEquals(text, element.getText());
+    }
+
+    protected WebElement findElementWithStringFormat(String selector, String input) {
+        WebElement element = driver.findElement(By.cssSelector(String.format(selector, input)));
+        return element;
+    }
+
+    protected By selectElementWithStringFormat(String selector, String input) {
+        By by = By.cssSelector(String.format(selector, input));
+        return by;
     }
 }

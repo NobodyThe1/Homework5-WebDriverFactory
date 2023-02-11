@@ -1,5 +1,8 @@
-import components.DropDown;
-import components.HeaderDropDown;
+import data.MessengersData;
+import data.PhoneData;
+import data.IdData;
+import data.countries.CountryData;
+import data.countries.cities.RussianCitiesData;
 import components.InputForm;
 import components.ModalWindow;
 import exceptions.BrowserNotSupportedException;
@@ -7,26 +10,20 @@ import factories.WebDriverFactory;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import pages.MainPage;
 import pages.ProfilePage;
 
+import java.time.LocalDate;
+
 public class OtusProfileTest {
+    public OtusProfileTest() throws BrowserNotSupportedException {
+    }
 
     private WebDriver driver = WebDriverFactory.create("chrome");
     private String login = System.getProperty("login", "otus-test@mail.ru");
     private String password = System.getProperty("password", "1Testtest+");
-
-    public OtusProfileTest() throws BrowserNotSupportedException {
-    }
-
-    @BeforeAll
-    public static void setUp() throws BrowserNotSupportedException {
-        WebDriverManager.chromedriver().setup();
-    }
 
     @AfterEach
     public void close() {
@@ -39,61 +36,51 @@ public class OtusProfileTest {
     MainPage mainPage = new MainPage(driver);
     ModalWindow modalWindow = new ModalWindow(driver);
     InputForm inputForm = new InputForm(driver);
-    DropDown dropDown = new DropDown(driver);
     ProfilePage profilePage = new ProfilePage(driver);
-    HeaderDropDown headerDropDown = new HeaderDropDown(driver);
 
     @Test
     public void otusProfileTest() {
 
         loginToOtus();
 
-        inputForm.fillForm("fname");
-        inputForm.fillForm("lname");
-        inputForm.fillForm("fname_latin");
-        inputForm.fillForm("lname_latin");
-        inputForm.fillForm("blog_name");
-        inputForm.fillDateOfBirth();
-        dropDown.selectCountry();
-        dropDown.selectCity();
-        dropDown.setEnglishLevel();
+        inputForm.fillUserPersonalData(IdData.FNAME, "Иван");
+        inputForm.fillUserPersonalData(IdData.LNAME, "Иванов");
+        inputForm.fillUserPersonalData(IdData.FNAME_LATIN, "Ivan");
+        inputForm.fillUserPersonalData(IdData.LNAME_LATIN, "Ivanov");
+        inputForm.fillUserPersonalData(IdData.BLOG_NAME, "Иван");
+        inputForm.fillDateOfBirth(LocalDate.now().minusYears(30));
+        inputForm.selectCity(RussianCitiesData.MOSCOW);
+        inputForm.setEnglishLevel("Средний (Intermediate)");
 
-        dropDown.moveToContactMenu1();
-        inputForm.getContactForm1();
-        dropDown.clickMessengerWhatsApp();
-        inputForm.fillContactForm1();
-        profilePage.addNewMessenger();
-        dropDown.moveToContactMenu2();
-        dropDown.clickMessengerTelegram();
-        inputForm.fillContactForm2();
+        inputForm.fillContactForm1(MessengersData.TELEGRAM.getName(), PhoneData.PHONE1.getName());
 
         profilePage.submitSaveProfilePage();
         driver.manage().deleteAllCookies();
         driver.navigate().refresh();
         loginToOtus();
 
-        inputForm.assertForm("fname");
-        inputForm.assertForm("lname");
-        inputForm.assertForm("fname_latin");
-        inputForm.assertForm("lname_latin");
-        inputForm.assertForm("blog_name");
-        inputForm.assertDateOfBirth();
-        dropDown.assertCountry();
-        dropDown.assertCity();
-        dropDown.assertEnglishLevel();
-        inputForm.assertContactForm1();
-        inputForm.assertContactForm2();
+        inputForm.personalDataShouldBeSameAs(IdData.FNAME, "Иван");
+        inputForm.personalDataShouldBeSameAs(IdData.LNAME, "Иванов");
+        inputForm.personalDataShouldBeSameAs(IdData.FNAME_LATIN, "Ivan");
+        inputForm.personalDataShouldBeSameAs(IdData.LNAME_LATIN, "Ivanov");
+        inputForm.personalDataShouldBeSameAs(IdData.BLOG_NAME, "Иван");
+        inputForm.dateOfBirthShouldBeSameAs(LocalDate.now().minusYears(30));
+        inputForm.countryShouldBeSameAs(CountryData.RUSSIA.getName());
+        inputForm.cityShouldBeSameAs(RussianCitiesData.MOSCOW.getName());
+        inputForm.englishLevelShouldBeSameAs("Средний (Intermediate)");
+        inputForm.contactFormShouldBeSameAs(PhoneData.PHONE1.getName(), IdData.CONTACT_1.getName());
+        inputForm.contactFormShouldBeSameAs(PhoneData.PHONE2.getName(), IdData.CONTACT_2.getName());
     }
 
     public void loginToOtus() {
         mainPage.open();
-        //modalWindow.popUpNotVisible();
+        modalWindow.popUpShouldNotBeVisible();
         mainPage.clickMainLoginPageButton();
-        //modalWindow.popUpVisible();
+        modalWindow.popUpShouldVisible();
         inputForm.fillLoginForm(login);
         inputForm.fillPasswordForm(password);
         modalWindow.clickSubmitLoginButton();
-        headerDropDown.moveToDropDownMenu();
-        headerDropDown.clickUserProfileLink();
+        inputForm.moveToDropDownMenu();
+        inputForm.clickUserProfileLink();
     }
 }
